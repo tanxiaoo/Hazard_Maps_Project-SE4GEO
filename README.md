@@ -5,6 +5,9 @@
 This is the repository for the project _An interactive application to support disaster management activities during the
 prevention and preparedness phases_ for the 2023-24 Software Engineering for Geoinformatics course at Politecnico di Milano.
 
+## This is a Confluence page that records information about the project, such as members/milestones/link of jira, etc!
+https://polimi24sw4geo.atlassian.net/l/cp/mpQ9BM0m](https://polimi24sw4geo.atlassian.net/wiki/external/MzY5OGVkMjA3ZGY3NGEzYzg0NjMzNTNlOTA5ODBmNDc
+
 
 ## Links to documents
 ### RASD
