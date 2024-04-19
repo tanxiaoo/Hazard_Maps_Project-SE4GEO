@@ -8,6 +8,13 @@ prevention and preparedness phases_ for the 2023-24 Software Engineering for Geo
 ## This is a Confluence page that records information about the project, such as members/milestones/link of jira, etc!
 https://polimi24sw4geo.atlassian.net/l/cp/mpQ9BM0m](https://polimi24sw4geo.atlassian.net/wiki/external/MzY5OGVkMjA3ZGY3NGEzYzg0NjMzNTNlOTA5ODBmNDc
 
+## Links to datasets
+###  (ISPRA)IdroGEO API
+https://developers.italia.it/it/api/ispra-idrogeo.html
+### ISPRA datasets
+https://idrogeo.isprambiente.it/app/page/open-data
+
+
 
 ## Links to documents
 ### RASD
