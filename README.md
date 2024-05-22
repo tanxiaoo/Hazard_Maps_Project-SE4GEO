@@ -10,7 +10,6 @@ https://mail-team-wta2kgwf.atlassian.net/wiki/spaces/HazardMaps/overview
 
 ## Links to datasets
 ###  (ISPRA)IdroGEO API
-<a href="https://developers.italia.it/it/api/ispra-idrogeo.html" target="_blank">API</a>
 https://developers.italia.it/it/api/ispra-idrogeo.html
 ### ISPRA datasets
 https://idrogeo.isprambiente.it/app/page/open-data
