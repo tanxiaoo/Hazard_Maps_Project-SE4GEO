@@ -1,3 +1,8 @@
+### 
+Firstly, you should change the database link to link to your local database and then execute fetch_data.py
+Clean data. py data_to db. py data_ analysis. py Finally, execute the app. py file
+
+
 ### creating virtual environment
 python -m venv venv
 source venv/bin/activate  # For Windows use `venv\Scripts\activate`
