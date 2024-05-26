@@ -19,3 +19,6 @@ https://idrogeo.isprambiente.it/app/page/open-data
 ## Links to documents
 ### RASD
 https://polimi365-my.sharepoint.com/:w:/g/personal/10658875_polimi_it/ES95EFgjeqpEi9aErmHcOwIBO1EH0MDIFyiXTufb896bbA?e=3IU66y
+
+### DD
+https://polimi365-my.sharepoint.com/:w:/g/personal/10962914_polimi_it/EdXwcvgnOcNJtHMXnlpOwIYB9ZFV-7RLnFbK84VE4egEKQ?e=3zq5HA
