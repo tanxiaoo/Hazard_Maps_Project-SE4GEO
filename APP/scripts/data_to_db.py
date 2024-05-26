@@ -2,8 +2,8 @@ import os
 import pandas as pd
 from sqlalchemy import create_engine
 
-# Define database connection
-DATABASE_URL = 'postgresql://postgres:941005@localhost:5432/se4g24'
+# Setup db connection (generic connection path : 'postgresql://user:password@localhost:5432/mydatabase')
+DATABASE_URL = 'postgresql://postgres:000000@localhost:5432/se4g24'
 engine = create_engine(DATABASE_URL)
 
 
