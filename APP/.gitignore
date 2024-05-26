@@ -1,0 +1,43 @@
+# Virtual environment
+venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Log files
+*.log
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+.local
+
+# Install packages
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+wheels/
+*.whl
+
+# Unit test / coverage reports
+.tox/
+.nox/
+.coverage
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# IDE specific files (e.g., PyCharm, VSCode)
+.idea/
+.vscode/
+
+# Windows specific files
+Thumbs.db
+Desktop.ini
