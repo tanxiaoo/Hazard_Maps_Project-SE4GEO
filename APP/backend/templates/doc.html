@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <title>Docs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333333;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Documentation</h1>
+    <button class="button" onclick="goToDfDoc()">JSON to DataFram</button>
+    <button class="button" onclick="goToGdfDoc()">JSON to GeoDataFrame</button>
+    <script>
+        function goToDfDoc() {
+                window.location.href = '/docs/df';
+            }
+            function goToGdfDoc() {
+                window.location.href = '/docs/gdf'
+            }
+    </script>
+</body>
+</html>
+
