@@ -42,56 +42,79 @@ context_df = pd.DataFrame([context_data])
 landslides_data = {
     'Category': ['Very high P4', 'High P3', 'Medium P2', 'Moderate P1', 'Attention zones AA', 'P4 + P3'],
     'Territory': [
-        f"{data['ar_fr_p4'].values[0]} ({data['ar_frp4_p'].values[0]}%)",
-        f"{data['ar_fr_p3'].values[0]} ({data['ar_frp3_p'].values[0]}%)",
-        f"{data['ar_fr_p2'].values[0]} ({data['ar_frp2_p'].values[0]}%)",
-        f"{data['ar_fr_p1'].values[0]} ({data['ar_frp1_p'].values[0]}%)",
-        f"{data['ar_fr_aa'].values[0]} ({data['ar_fraa_p'].values[0]}%)",
-        f"{data['ar_fr_p3p4'].values[0]} ({data['ar_frp3p4p'].values[0]}%)"
+        f"{int(float(data['ar_fr_p4'].values[0]))} ({data['ar_frp4_p'].values[0]}%)",
+        f"{int(float(data['ar_fr_p3'].values[0]))} ({data['ar_frp3_p'].values[0]}%)",
+        f"{int(float(data['ar_fr_p2'].values[0]))} ({data['ar_frp2_p'].values[0]}%)",
+        f"{int(float(data['ar_fr_p1'].values[0]))} ({data['ar_frp1_p'].values[0]}%)",
+        f"{int(float(data['ar_fr_aa'].values[0]))} ({data['ar_fraa_p'].values[0]}%)",
+        f"{int(float(data['ar_fr_p3p4'].values[0]))} ({data['ar_frp3p4p'].values[0]}%)"
     ],
     'Population': [
-        f"{data['pop_fr_p4'].values[0]} ({data['popfrp4_p'].values[0]}%)",
-        f"{data['pop_fr_p3'].values[0]} ({data['popfrp3_p'].values[0]}%)",
-        f"{data['pop_fr_p2'].values[0]} ({data['popfrp2_p'].values[0]}%)",
-        f"{data['pop_fr_p1'].values[0]} ({data['popfrp1_p'].values[0]}%)",
-        f"{data['pop_fr_aa'].values[0]} ({data['popfraa_p'].values[0]}%)",
-        f"{data['popfr_p3p4'].values[0]} ({data['popfrp3p4p'].values[0]}%)"
+        f"{int(float(data['pop_fr_p4'].values[0]))} ({data['popfrp4_p'].values[0]}%)",
+        f"{int(float(data['pop_fr_p3'].values[0]))} ({data['popfrp3_p'].values[0]}%)",
+        f"{int(float(data['pop_fr_p2'].values[0]))} ({data['popfrp2_p'].values[0]}%)",
+        f"{int(float(data['pop_fr_p1'].values[0]))} ({data['popfrp1_p'].values[0]}%)",
+        f"{int(float(data['pop_fr_aa'].values[0]))} ({data['popfraa_p'].values[0]}%)",
+        f"{int(float(data['popfr_p3p4'].values[0]))} ({data['popfrp3p4p'].values[0]}%)"
     ],
     'Families': [
-        f"{data['fam_fr_p4'].values[0]} ({data['famfrp4_p'].values[0]}%)",
-        f"{data['fam_fr_p3'].values[0]} ({data['famfrp3_p'].values[0]}%)",
-        f"{data['fam_fr_p2'].values[0]} ({data['famfrp2_p'].values[0]}%)",
-        f"{data['fam_fr_p1'].values[0]} ({data['famfrp1_p'].values[0]}%)",
-        f"{data['fam_fr_aa'].values[0]} ({data['famfraa_p'].values[0]}%)",
-        f"{data['famfr_p3p4'].values[0]} ({data['famfrp3p4p'].values[0]}%)"
+        f"{int(float(data['fam_fr_p4'].values[0]))} ({data['famfrp4_p'].values[0]}%)",
+        f"{int(float(data['fam_fr_p3'].values[0]))} ({data['famfrp3_p'].values[0]}%)",
+        f"{int(float(data['fam_fr_p2'].values[0]))} ({data['famfrp2_p'].values[0]}%)",
+        f"{int(float(data['fam_fr_p1'].values[0]))} ({data['famfrp1_p'].values[0]}%)",
+        f"{int(float(data['fam_fr_aa'].values[0]))} ({data['famfraa_p'].values[0]}%)",
+        f"{int(float(data['famfr_p3p4'].values[0]))} ({data['famfrp3p4p'].values[0]}%)"
     ],
     'Buildings': [
-        f"{data['ed_fr_p4'].values[0]} ({data['edfrp4_p'].values[0]}%)",
-        f"{data['ed_fr_p3'].values[0]} ({data['edfrp3_p'].values[0]}%)",
-        f"{data['ed_fr_p2'].values[0]} ({data['edfrp2_p'].values[0]}%)",
-        f"{data['ed_fr_p1'].values[0]} ({data['edfrp1_p'].values[0]}%)",
-        f"{data['ed_fr_aa'].values[0]} ({data['edfraa_p'].values[0]}%)",
-        f"{data['ed_fr_p3p4'].values[0]} ({data['edfrp3p4p'].values[0]}%)"
+        f"{int(float(data['ed_fr_p4'].values[0]))} ({data['edfrp4_p'].values[0]}%)",
+        f"{int(float(data['ed_fr_p3'].values[0]))} ({data['edfrp3_p'].values[0]}%)",
+        f"{int(float(data['ed_fr_p2'].values[0]))} ({data['edfrp2_p'].values[0]}%)",
+        f"{int(float(data['ed_fr_p1'].values[0]))} ({data['edfrp1_p'].values[0]}%)",
+        f"{int(float(data['ed_fr_aa'].values[0]))} ({data['edfraa_p'].values[0]}%)",
+        f"{int(float(data['ed_fr_p3p4'].values[0]))} ({data['edfrp3p4p'].values[0]}%)"
     ],
     'Industries and services': [
-        f"{data['im_fr_p4'].values[0]} ({data['imfrp4_p'].values[0]}%)",
-        f"{data['im_fr_p3'].values[0]} ({data['imfrp3_p'].values[0]}%)",
-        f"{data['im_fr_p2'].values[0]} ({data['imfrp2_p'].values[0]}%)",
-        f"{data['im_fr_p1'].values[0]} ({data['imfrp1_p'].values[0]}%)",
-        f"{data['im_fr_aa'].values[0]} ({data['imfraa_p'].values[0]}%)",
-        f"{data['imfr_p3p4'].values[0]} ({data['imfrp3p4p'].values[0]}%)"
+        f"{int(float(data['im_fr_p4'].values[0]))} ({data['imfrp4_p'].values[0]}%)",
+        f"{int(float(data['im_fr_p3'].values[0]))} ({data['imfrp3_p'].values[0]}%)",
+        f"{int(float(data['im_fr_p2'].values[0]))} ({data['imfrp2_p'].values[0]}%)",
+        f"{int(float(data['im_fr_p1'].values[0]))} ({data['imfrp1_p'].values[0]}%)",
+        f"{int(float(data['im_fr_aa'].values[0]))} ({data['imfraa_p'].values[0]}%)",
+        f"{int(float(data['imfr_p3p4'].values[0]))} ({data['imfrp3p4p'].values[0]}%)"
     ],
     'Cultural heritage': [
-        f"{data['bbcc_fr_p4'].values[0]} ({data['bbccfrp4_p'].values[0]}%)",
-        f"{data['bbcc_fr_p3'].values[0]} ({data['bbccfrp3_p'].values[0]}%)",
-        f"{data['bbcc_fr_p2'].values[0]} ({data['bbccfrp2_p'].values[0]}%)",
-        f"{data['bbcc_fr_p1'].values[0]} ({data['bbccfrp1_p'].values[0]}%)",
-        f"{data['bbcc_fr_aa'].values[0]} ({data['bbccfraa_p'].values[0]}%)",
-        f"{data['bbccfrp3p4'].values[0]} ({data['bbccfrp34p'].values[0]}%)"
+        f"{int(float(data['bbcc_fr_p4'].values[0]))} ({data['bbccfrp4_p'].values[0]}%)",
+        f"{int(float(data['bbcc_fr_p3'].values[0]))} ({data['bbccfrp3_p'].values[0]}%)",
+        f"{int(float(data['bbcc_fr_p2'].values[0]))} ({data['bbccfrp2_p'].values[0]}%)",
+        f"{int(float(data['bbcc_fr_p1'].values[0]))} ({data['bbccfrp1_p'].values[0]}%)",
+        f"{int(float(data['bbcc_fr_aa'].values[0]))} ({data['bbccfraa_p'].values[0]}%)",
+        f"{int(float(data['bbccfrp3p4'].values[0]))} ({data['bbccfrp34p'].values[0]}%)"
     ]
 }
 
 landslides_df = pd.DataFrame(landslides_data)
+
+# adding new category-None zones
+def extract_values_percent(cell):
+    value, percent = cell.split(' (')
+    return float(value), float(percent.rstrip('%)'))
+
+sum_values = {}
+sum_percentages = {}
+
+columns_to_process = ['Territory', 'Population', 'Families', 'Buildings', 'Industries and services', 'Cultural heritage']
+
+for column in columns_to_process:
+    values, percentages = zip(*landslides_df[column][:-1].apply(extract_values_percent))
+    sum_values[column] = sum(values)
+    sum_percentages[column] = sum(percentages)
+
+needed_percentages = {col: 100 - sum_percentages[col] for col in sum_percentages}
+needed_values = {col: needed_percentages[col] / 100 * sum_values[col] / (sum_percentages[col] / 100) for col in needed_percentages}
+
+new_index = len(landslides_df)
+landslides_df.loc[new_index, 'Category'] = 'None zones'
+for col in columns_to_process:
+    landslides_df.loc[new_index, col] = f"{needed_values[col]:.0f} ({needed_percentages[col]:.3f}%)"
 
 # Post to DB
 context_df.to_sql('context data', engine, if_exists='replace', index=False)
