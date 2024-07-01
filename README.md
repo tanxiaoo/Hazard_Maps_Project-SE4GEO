@@ -22,3 +22,6 @@ https://polimi365-my.sharepoint.com/:w:/g/personal/10658875_polimi_it/ES95EFgjeq
 
 ### DD
 https://polimi365-my.sharepoint.com/:w:/g/personal/10962914_polimi_it/EdXwcvgnOcNJtHMXnlpOwIYB9ZFV-7RLnFbK84VE4egEKQ?e=3zq5HA
+
+### Software Release Document
+https://polimi365-my.sharepoint.com/:w:/g/personal/10962914_polimi_it/EUFOYsNPUe1GqBHm7fyI26wBJKv521Xja2Xspu9-_Tus3A?e=j6lhx0
