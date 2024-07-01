@@ -16,13 +16,11 @@ connection = psycopg2.connect(DATABASE_URL)
 
 @app.route("/context/<string:id>", methods=["GET"])
 def get_context_endpoint(id):
-    table_name = f'context_data_{id}'
-    return get_context(conn=conn, table_name=table_name)
+    return get_context(conn=conn, id=id)
 
 @app.route("/landslides/<string:id>", methods=["GET"])
 def get_landslides_endpoint(id):
-    table_name = f'landslides_data_{id}'
-    return get_landslides(conn=conn, table_name=table_name)
+    return get_landslides(conn=conn, id=id)
 
 @app.route("/regions", methods=["GET"])
 def get_regions_endpoint():

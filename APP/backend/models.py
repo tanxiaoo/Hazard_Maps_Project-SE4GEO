@@ -1,15 +1,15 @@
 import pandas as pd
 import geopandas as gpd
-from sqlalchemy import text 
+from sqlalchemy import text
 from flask import jsonify
 
-def get_context(conn, table_name):
-    df = pd.read_sql_table(table_name=table_name, con=conn)
+def get_context(conn, id):
+    df = pd.read_sql_table(f'SELECT * FROM context_data WHERE id = {id}', con=conn)
     df_json = df.to_json(orient="records")
     return df_json
 
-def get_landslides(conn, table_name):
-    df = pd.read_sql_table(table_name=table_name, con=conn)
+def get_landslides(conn, id):
+    df = pd.read_sql_table(f'SELECT * FROM landslides_data WHERE id = {id} ', con=conn)
     df_json = df.to_json(orient="records")
     return df_json
 

@@ -113,8 +113,8 @@ def process_data(url, id):
         landslides_df.loc[new_index, col] = f"{needed_values[col]:.0f} ({needed_percentages[col]:.3f}%)"
 
     # Post to DB
-    context_df.to_sql(f'context_data_{id}', engine, if_exists='replace', index=False)
-    landslides_df.to_sql(f'landslides_data_{id}', engine, if_exists='replace', index=False)
+    context_df.to_sql(f'context_data', engine, if_exists='replace', index=False)
+    landslides_df.to_sql(f'landslides_data', engine, if_exists='replace', index=False)
 
 # Send the request
 url = 'https://test.idrogeo.isprambiente.it/api/pir/italia'
