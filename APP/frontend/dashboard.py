@@ -8,7 +8,7 @@ import shapely.wkb as wkb
 import dash_leaflet as dl
 import plotly.express as px
 import plotly.graph_objects as go
-from figures import create_stacked_bar_chart, create_context_data_display, leaflet_map
+from figures import create_stacked_bar_chart, create_context_data_display, leaflet_map,create_button_with_icon
 from dash import callback_context
 from dash.exceptions import PreventUpdate
 import dash
@@ -39,6 +39,42 @@ regions_geo_data = json.loads(regions_geo_data)
 # 准备 geo_sectors 数据
 geo_sectors = {row['properties']['id']: row for row in regions_geo_data['features']}
 
+# Risk indicator
+
+region_ids = list(range(1, 21))
+
+# Initialize an empty DataFrame for risk indicators
+risk_indicator_df = pd.DataFrame()
+
+def extract_values(cell):
+    if '(' in cell:
+        value = cell.split(' (')[0]
+    else:
+        value = cell
+    return float(value)
+
+for region_id in region_ids:
+    # Fetch landslides data
+    landslides_url = f"http://127.0.0.1:5000/landslides/{region_id}"
+    landslides_response = requests.get(landslides_url)
+    landslides_data = json.loads(landslides_response.text)
+    landslides_df = pd.json_normalize(landslides_data)
+
+    landslides_df = landslides_df.drop(columns=['Category'])
+    summed_row = landslides_df.iloc[:2].map(extract_values).sum()
+    summed_row = summed_row.astype(int)
+    new_row = pd.DataFrame([summed_row])
+    new_row.insert(0, 'id', region_id)
+    risk_indicator_df = pd.concat([risk_indicator_df, new_row], ignore_index=True)
+
+risk_indicator_gdf = regions_gdf.merge(risk_indicator_df, on='id')
+risk_indicator_name = ['Territory', 'Population', 'Families', 'Buildings', 'Industries and services', 'Cultural heritage']
+
+risk_indicator_gdf.to_file("risk_indicator_data.geojson", driver='GeoJSON')
+
+
+
+
 # Create a Dash app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -46,32 +82,17 @@ app.layout = dbc.Container([
     html.Div(id="map-container", children=[
         dbc.Row([
             dbc.Col([
-                html.H5("LANDSLIDE HAZARD AND RISK MAP"),
+                html.H5("LANDSLIDE HAZARD AND RISK MAP", style={'color': '#fec036'}),
                 html.P("An interactive application to support disaster management activities"),
                 html.Div([
-                    html.Div([
-                        html.P("Select a region"),
-                        dcc.Dropdown(
-                            id='region-input',
-                            options=[{'label': 'Italy', 'value': 'Italy'}] + [{'label': region, 'value': region} for region in regions_df['den_reg']],
-                            value='Italy',
-                            clearable=False,
-                        ),
-                    ], style={'flex': '1', 'padding': '10px','color': '#171b26'}),
-                    html.Div([
-                        html.P("Select basemap style"),
-                        dcc.Dropdown(
-                            id='basemap-style',
-                            options=[
-                                {'label': 'Open Street Map', 'value': 'open-street-map'},
-                                {'label': 'Carto Positron', 'value': 'carto-positron'},
-                                {'label': 'Carto Darkmatter', 'value': 'carto-darkmatter'},
-                            ],
-                            value='open-street-map',
-                            clearable=False,
-                        ),
-                    ], style={'flex': '1', 'padding': '10px'})
-                ], style={'display': 'flex', 'flex-direction': 'row'}),
+                    html.P("Select a region", style={'color': '#fff'}),
+                    dcc.Dropdown(
+                        id='region-input',
+                        options=[{'label': 'Italy', 'value': 'Italy'}] + [{'label': region, 'value': region} for region in regions_df['den_reg']],
+                        value='Italy',
+                        clearable=False,
+                    ),
+                ], style={'flex': '1', 'padding': '10px', 'color': '#171b26'}),
                 html.H6("Context Data"),
                 html.Div(id='context-data-display'),
                 html.H6("Landslide Data"),
@@ -82,21 +103,31 @@ app.layout = dbc.Container([
                     ),
                     style={'width': '100%', 'padding': '0', 'margin': '0'}
                 ),
-                html.Button("Download context", id="download-context-btn", className="btn btn-primary"),
-                html.Button("Download landslide", id="download-landslide-btn", className="btn btn-primary"),
-                dcc.Download(id="download-dataframe-csv-context"),
-                dcc.Download(id="download-dataframe-csv-landslide"),
-                html.Button("Download Metadata", id="download-metadata-btn", className="btn btn-secondary", style={'margin-left': '10px'}),
-                dcc.Download(id="download-metadata-csv"),
-                html.Button("Go to open data", id="go-to-open-data-btn", className="btn btn-secondary",
-                            style={'margin-left': '10px'})
-            ], width=4,style={'color': '#fff'}),
+                html.Div([
+                    create_button_with_icon("context", "download-context-btn", "btn btn-outline-danger",
+                                            style={'margin': '0 10px', 'color': 'white', 'border-color': 'white'}),
+                    create_button_with_icon("landslide", "download-landslide-btn", "btn btn-outline-danger",
+                                            style={'margin': '0 10px', 'color': 'white', 'border-color': 'white'}),
+                    dcc.Download(id="download-dataframe-csv-context"),
+                    dcc.Download(id="download-dataframe-csv-landslide"),
+                    create_button_with_icon("Metadata", None, "btn btn-outline-danger",
+                                            href="https://idrogeo.isprambiente.it/cms/wp-content/uploads/2023/02/Metadati_open_data_PIR.xlsx",
+                                            style={'margin': '0 10px', 'color': 'white', 'border-color': 'white'}),
+                    create_button_with_icon("open data", None, "btn btn-outline-danger",
+                                            href="https://idrogeo.isprambiente.it/app/page/open-data",
+                                            style={'margin': '0 10px', 'color': 'white', 'border-color': 'white'})
+                ], style={'display': 'flex', 'flex-direction': 'row', 'justify-content': 'space-between',
+                          'padding': '10px'})
+
+            ], width=4, style={'color': '#fff', 'background-color': '#171b26', 'height': '100vh', 'overflow': 'auto', 'padding': '12px'}),
             dbc.Col([
                 html.Div(id="leaflet-map-container", style={'height': '100vh', 'width': '100%'})
             ], width=8)
-        ], style={'height': '100vh',})
+        ], style={'height': '100vh', 'margin': '0', 'padding': '0'})
     ])
-], fluid=True,style={'background-color': '#171b26'})
+], fluid=True, style={'height': '100vh', 'margin': '0', 'padding': '0'})
+
+
 
 
 @app.callback(
@@ -109,8 +140,8 @@ def update_leaflet_map(selected_region):
 
     return leaflet_map(selected_region, regions_geo_data, highlight_geojson)
 
-region_name_to_id = {row['den_reg']: row['id'] for _, row in regions_gdf.iterrows()}
 
+region_name_to_id = {row['den_reg']: row['id'] for _, row in regions_gdf.iterrows()}
 @app.callback(
     [Output('context-data-display', 'children'),
      Output('stacked-bar-chart', 'figure')],

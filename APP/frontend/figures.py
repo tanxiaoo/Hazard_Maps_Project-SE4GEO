@@ -4,6 +4,11 @@ import plotly.graph_objs as go
 import plotly.express as px
 import dash_leaflet as dl
 from dash import dcc, html, Dash, Input, Output
+import json
+import folium
+import geopandas as gpd
+
+
 
 from dash import html
 
@@ -85,23 +90,21 @@ def create_context_data_display(data):
     ], style={'max-width': '100%'})
 
 
+import plotly.graph_objects as go
 
-
-
-
+import plotly.graph_objects as go
 
 def create_stacked_bar_chart(landslides_df):
     fig = go.Figure()
 
-    # landslides_df = pd.concat([landslides_df.head(5), landslides_df.tail(1)])
     landslides_df = landslides_df.head(5)
 
     categories = landslides_df['Category'].unique()
 
-    columns = landslides_df.columns.tolist()[1:]  # 排除'Category'列
+    columns = landslides_df.columns.tolist()[1:]
 
-    # 定义颜色序列，匹配参考图
-    colors = ['#FF4500', '#FF6347', '#FFD700', '#ADFF2F', '#32CD32']
+    # 定义新的颜色序列
+    colors = ['#720002', '#e30617', '#e4681e', '#f3ca4e', '#fefd7e']
 
     def extract_values_percent(cell):
         value, percent = cell.split(' (')
@@ -109,18 +112,19 @@ def create_stacked_bar_chart(landslides_df):
 
     for i, category in enumerate(categories):
         cat_data = landslides_df[landslides_df['Category'] == category].iloc[0]
-        cell_values = [cat_data[col] for col in columns]  # 获取每个单元格的原始值
-        y_values = [extract_values_percent(cat_data[col])[1] for col in columns]  # 仅使用百分数值
+        cell_values = [cat_data[col] for col in columns]
+        y_values = [extract_values_percent(cat_data[col])[1] for col in columns]
         fig.add_trace(go.Bar(
-            y=columns,  # 将原来的 x 改为 y
-            x=y_values,  # 将原来的 y 改为 x
+            y=columns,
+            x=y_values,
             name=category,
-            marker_color=colors[i % len(colors)],  # 使用颜色序列
-            text=[f"{percent}%" for percent in y_values],  # 显示百分比
-            textposition='auto',
-            orientation='h', # 设置为水平条形图
-            hovertemplate = '<b>%{y}</b><br>%{customdata}',  # 显示列名、百分比和原始值
-            customdata = cell_values,  # 添加原始值到 hover 数据
+            marker_color=colors[i % len(colors)],
+            text=[f"{percent}%" for percent in y_values],
+            textposition='inside',
+            orientation='h',
+            hovertemplate='<b>%{y}</b><br>%{customdata}',
+            customdata=cell_values,
+            insidetextanchor='start'  # 将文字左对齐
         ))
 
     fig.update_layout(
@@ -129,14 +133,25 @@ def create_stacked_bar_chart(landslides_df):
             categoryorder='category ascending',
             tickmode='array',
             tickvals=columns,
-            ticktext=['<b>{}</b>'.format(col) for col in columns],  # 加粗标签并转换成HTML
-            tickangle=0,  # 确保标签是水平的
+            ticktext=['<b>{}</b>'.format(col) for col in columns],
+            tickangle=0,
             automargin=True,
-            tickfont=dict(size=12),  # 设置字体大小
+            tickfont=dict(size=12),
             side='left',
             anchor='free',
-            position=1, # 调整这个值可以精确控制标签的左右位置
+            position=1,
+            color='#fec036',
+            showline=False,
+            zeroline=False,
+        ),
+        xaxis=dict(
+            showgrid=False,
             color='#fff',
+            showline=False,
+            zeroline=False,
+            tickmode='array',
+            tickvals=[0, 5, 10, 15, 20],
+            ticktext=['0%', '5%', '10%', '15%', '20%'],
         ),
         legend=dict(
             orientation='h',
@@ -144,19 +159,60 @@ def create_stacked_bar_chart(landslides_df):
             y=-0.2,
             xanchor='center',
             x=0.5,
-            traceorder = 'normal',
-    ),
-        margin=dict(l=0, r=0, t=0, b=100),  # 调整边距
-        plot_bgcolor='rgba(0,0,0,0)',  # 设置图表背景颜色透明
-        paper_bgcolor='rgba(0,0,0,0)',  # 设置纸张背景颜色透明
+            traceorder='normal',
+            font=dict(color='#fff')  # 设置图例文字颜色为白色
+        ),
+        margin=dict(l=0, r=0, t=0, b=100),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
     )
 
     fig.update_traces(
-        texttemplate='%{text}',  # 使用百分比作为标签
-        textposition='inside',  # 标签在条形内部
+        texttemplate='%{text}',
+        textposition='inside',
     )
 
     return fig
+
+
+
+
+
+
+
+
+def create_button_with_icon(text, button_id, button_class, href=None, style=None):
+    icon = dcc.Markdown(
+        '''
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+          <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+          <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+        </svg>
+        ''',
+        dangerously_allow_html=True,
+        style={'display': 'inline-block', 'margin-right': '5px','color': '#fff'}
+    )
+
+    if href:
+        return html.A(
+            children=[
+                icon,
+                text
+            ],
+            href=href,
+            className=button_class,
+            style=style
+        )
+    else:
+        return html.Button(
+            children=[
+                icon,
+                text
+            ],
+            id=button_id,
+            className=button_class,
+            style=style
+        )
 
 
 def get_Choropleth(df, geo_data, arg, marker_opacity,
@@ -183,6 +239,10 @@ def get_Choropleth(df, geo_data, arg, marker_opacity,
     )
     return fig
 
+
+
+
+
 def leaflet_map(region, regions_geo_data, highlight_geojson):
     # 获取区域的配置
     cfg = plotly_config.get(region, plotly_config['Italy'])
@@ -202,8 +262,8 @@ def leaflet_map(region, regions_geo_data, highlight_geojson):
 
     # 全局 GeoJSON 图层的样式
     geojson_style = {
-        'fillColor': '#32CD32',  # 填充颜色
-        'color': '#32CD32',  # 边界颜色
+        'fillColor': '#0000FF',  # 填充颜色
+        'color': '#0000FF',  # 边界颜色改成蓝色
         'weight': 1,  # 边界宽度
         'fillOpacity': 0.01  # 填充透明度
     }
@@ -211,6 +271,12 @@ def leaflet_map(region, regions_geo_data, highlight_geojson):
     # WMS 图层的图例 URL
     landslide_legend_url = "http://localhost:8080/geoserver/se4g24/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=se4g24:landslide_hazard_map"
     population_legend_url = "http://localhost:8080/geoserver/se4g24/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=se4g24:ita_ppp_2020"
+    risk_indicator_buildings_legend_url = "http://localhost:8080/geoserver/se4g24/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=se4g24:risk_indicator_buildings"
+    risk_indicator_cultural_heritage_legend_url = "http://localhost:8080/geoserver/se4g24/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=se4g24:risk_indicator_heritage"
+    risk_indicator_families_legend_url = "http://localhost:8080/geoserver/se4g24/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=se4g24:risk_indicator_families"
+    risk_indicator_industries_and_services_legend_url = "http://localhost:8080/geoserver/se4g24/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=se4g24:risk_indicator_industry"
+    risk_indicator_population_legend_url = "http://localhost:8080/geoserver/se4g24/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=se4g24:risk_indicator_population"
+    risk_indicator_territory_legend_url = "http://localhost:8080/geoserver/se4g24/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=se4g24:risk_indicator_territory"
 
     # 生成地图
     leaflet_map = dl.Map(center=cfg['centre'], zoom=cfg['zoom'], children=[
@@ -236,7 +302,61 @@ def leaflet_map(region, regions_geo_data, highlight_geojson):
                 version="1.1.0",
                 attribution="GeoServer WMS",
                 id="population-layer"
-            ), name="Population Density", checked=True),
+            ), name="Population Density", checked=False),
+            dl.Overlay(dl.WMSTileLayer(
+                url="http://localhost:8080/geoserver/se4g24/wms",
+                layers="se4g24:risk_indicator_buildings",
+                format="image/png",
+                transparent=True,
+                version="1.1.0",
+                attribution="GeoServer WMS",
+                id="risk-indicator-buildings-layer"
+            ), name="Risk Indicator Buildings", checked=False),
+            dl.Overlay(dl.WMSTileLayer(
+                url="http://localhost:8080/geoserver/se4g24/wms",
+                layers="se4g24:risk_indicator_heritage",
+                format="image/png",
+                transparent=True,
+                version="1.1.0",
+                attribution="GeoServer WMS",
+                id="risk-indicator-cultural-heritage-layer"
+            ), name="Risk Indicator Cultural Heritage", checked=False),
+            dl.Overlay(dl.WMSTileLayer(
+                url="http://localhost:8080/geoserver/se4g24/wms",
+                layers="se4g24:risk_indicator_families",
+                format="image/png",
+                transparent=True,
+                version="1.1.0",
+                attribution="GeoServer WMS",
+                id="risk-indicator-families-layer"
+            ), name="Risk Indicator Families", checked=False),
+            dl.Overlay(dl.WMSTileLayer(
+                url="http://localhost:8080/geoserver/se4g24/wms",
+                layers="se4g24:risk_indicator_industry",
+                format="image/png",
+                transparent=True,
+                version="1.1.0",
+                attribution="GeoServer WMS",
+                id="risk-indicator-industries-and-services-layer"
+            ), name="Risk Indicator Industries and Services", checked=False),
+            dl.Overlay(dl.WMSTileLayer(
+                url="http://localhost:8080/geoserver/se4g24/wms",
+                layers="se4g24:risk_indicator_population",
+                format="image/png",
+                transparent=True,
+                version="1.1.0",
+                attribution="GeoServer WMS",
+                id="risk-indicator-population-layer"
+            ), name="Risk Indicator Population", checked=False),
+            dl.Overlay(dl.WMSTileLayer(
+                url="http://localhost:8080/geoserver/se4g24/wms",
+                layers="se4g24:risk_indicator_territory",
+                format="image/png",
+                transparent=True,
+                version="1.1.0",
+                attribution="GeoServer WMS",
+                id="risk-indicator-territory-layer"
+            ), name="Risk Indicator Territory", checked=False),
             dl.Overlay(
                 dl.GeoJSON(data=regions_geo_data, id='geojson-layer', options=dict(style=geojson_style)),
                 name="Regions", checked=True
@@ -269,9 +389,71 @@ def leaflet_map(region, regions_geo_data, highlight_geojson):
             'border': '1px solid black',
             'padding': '5px',
             'z-index': '1000',
-            'display': 'block'
+            'display': 'none'  # 初始状态为隐藏
         }),
+        html.Img(id="risk-indicator-buildings-legend-container", src=risk_indicator_buildings_legend_url, style={
+            'position': 'absolute',
+            'bottom': '10px',
+            'left': '10px',
+            'background': 'white',
+            'border': '1px solid black',
+            'padding': '5px',
+            'z-index': '1000',
+            'display': 'none'  # 初始状态为隐藏
+        }),
+        html.Img(id="risk-indicator-cultural-heritage-legend-container", src=risk_indicator_cultural_heritage_legend_url, style={
+            'position': 'absolute',
+            'bottom': '10px',
+            'left': '10px',
+            'background': 'white',
+            'border': '1px solid black',
+            'padding': '5px',
+            'z-index': '1000',
+            'display': 'none'  # 初始状态为隐藏
+        }),
+        html.Img(id="risk-indicator-families-legend-container", src=risk_indicator_families_legend_url, style={
+            'position': 'absolute',
+            'bottom': '10px',
+            'left': '10px',
+            'background': 'white',
+            'border': '1px solid black',
+            'padding': '5px',
+            'z-index': '1000',
+            'display': 'none'  # 初始状态为隐藏
+        }),
+        html.Img(id="risk-indicator-industries-and-services-legend-container", src=risk_indicator_industries_and_services_legend_url, style={
+            'position': 'absolute',
+            'bottom': '10px',
+            'left': '10px',
+            'background': 'white',
+            'border': '1px solid black',
+            'padding': '5px',
+            'z-index': '1000',
+            'display': 'none'  # 初始状态为隐藏
+        }),
+        html.Img(id="risk-indicator-population-legend-container", src=risk_indicator_population_legend_url, style={
+            'position': 'absolute',
+            'bottom': '10px',
+            'left': '10px',
+            'background': 'white',
+            'border': '1px solid black',
+            'padding': '5px',
+            'z-index': '1000',
+            'display': 'none'  # 初始状态为隐藏
+        }),
+        html.Img(id="risk-indicator-territory-legend-container", src=risk_indicator_territory_legend_url, style={
+            'position': 'absolute',
+            'bottom': '10px',
+            'left': '10px',
+            'background': 'white',
+            'border': '1px solid black',
+            'padding': '5px',
+            'z-index': '1000',
+            'display': 'none'  # 初始状态为隐藏
+        })
     ], style={'position': 'relative', 'height': '100%'})
+
+
 
 
 
