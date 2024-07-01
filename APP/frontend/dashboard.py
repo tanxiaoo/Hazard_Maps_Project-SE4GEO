@@ -57,7 +57,7 @@ app.layout = dbc.Container([
                             value='Italy',
                             clearable=False,
                         ),
-                    ], style={'flex': '1', 'padding': '10px'}),
+                    ], style={'flex': '1', 'padding': '10px','color': '#171b26'}),
                     html.Div([
                         html.P("Select basemap style"),
                         dcc.Dropdown(
@@ -86,13 +86,17 @@ app.layout = dbc.Container([
                 html.Button("Download landslide", id="download-landslide-btn", className="btn btn-primary"),
                 dcc.Download(id="download-dataframe-csv-context"),
                 dcc.Download(id="download-dataframe-csv-landslide"),
-            ], width=4),
+                html.Button("Download Metadata", id="download-metadata-btn", className="btn btn-secondary", style={'margin-left': '10px'}),
+                dcc.Download(id="download-metadata-csv"),
+                html.Button("Go to open data", id="go-to-open-data-btn", className="btn btn-secondary",
+                            style={'margin-left': '10px'})
+            ], width=4,style={'color': '#fff'}),
             dbc.Col([
                 html.Div(id="leaflet-map-container", style={'height': '100vh', 'width': '100%'})
             ], width=8)
-        ], style={'height': '100vh'})
+        ], style={'height': '100vh',})
     ])
-], fluid=True)
+], fluid=True,style={'background-color': '#171b26'})
 
 
 @app.callback(

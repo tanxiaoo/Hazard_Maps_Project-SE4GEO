@@ -17,8 +17,8 @@ def create_context_data_display(data):
     # 数据项
     data_items = list(data.items())
 
-    # 颜色列表
-    colors = ['#FF4500', '#FF6347', '#FFD700', '#ADFF2F', '#32CD32']
+    # 颜色参数
+    color = 'rgba(128, 0, 128, 0.2)'  # 透明的紫色
 
     return html.Div([
 
@@ -29,7 +29,7 @@ def create_context_data_display(data):
                 html.Span(f"{data_items[0][1]:,} km²", style={'font-size': '18px', 'font-weight': 'bold','color':'white'}),
                 html.P(data_items[0][0].replace(' (km²)', ''), style={'font-size': '14px','color':'white'}),
             ], style={'width': '40%', 'display': 'flex', 'flex-direction': 'column', 'justify-content': 'center',
-                      'background-color': colors[0], 'flex-grow': '1', 'text-align': 'center', 'padding': '10px'}),
+                      'background-color': color, 'flex-grow': '1', 'text-align': 'center', 'padding': '10px'}),
 
             # 右侧包含三个div的容器，宽度60%
             html.Div([
@@ -38,15 +38,15 @@ def create_context_data_display(data):
                     html.Div([
                         html.Span(f"{data_items[1][1]:,}", style={'font-size': '18px', 'font-weight': 'bold'}),
                         html.P(data_items[1][0], style={'font-size': '14px'}),
-                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': colors[1]}),
+                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': color}),
                     html.Div([
                         html.Span(f"{data_items[2][1]:,}", style={'font-size': '18px', 'font-weight': 'bold'}),
                         html.P(data_items[2][0], style={'font-size': '14px'}),
-                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': colors[1]}),
+                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': color}),
                     html.Div([
                         html.Span(f"{data_items[3][1]:,}", style={'font-size': '18px', 'font-weight': 'bold'}),
                         html.P(data_items[3][0], style={'font-size': '14px'}),
-                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': colors[1]}),
+                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': color}),
                 ], style={'width': '100%', 'height': '33.33%', 'display': 'flex', 'box-sizing': 'border-box', 'gap': '5px'}),
 
                 # 第三个div，宽度100%，高度33.33%，里面水平分布两个子div
@@ -54,11 +54,11 @@ def create_context_data_display(data):
                     html.Div([
                         html.Span(f"{data_items[4][1]:,}", style={'font-size': '18px', 'font-weight': 'bold'}),
                         html.P(data_items[4][0], style={'font-size': '14px'}),
-                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': colors[2]}),
+                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': color}),
                     html.Div([
                         html.Span(f"{data_items[5][1]:,}", style={'font-size': '18px', 'font-weight': 'bold'}),
                         html.P(data_items[5][0], style={'font-size': '14px'}),
-                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': colors[3]}),
+                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': color}),
                 ], style={'width': '100%', 'height': '33.33%', 'display': 'flex', 'box-sizing': 'border-box', 'gap': '5px'}),
 
                 # 第四个div，宽度100%，高度33.33%，里面均匀水平分布三个子div
@@ -66,15 +66,15 @@ def create_context_data_display(data):
                     html.Div([
                         html.Span(f"{data_items[6][1]}%", style={'font-size': '18px', 'font-weight': 'bold'}),
                         html.P(data_items[6][0].replace('%', ''), style={'font-size': '14px'}),
-                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': colors[4]}),
+                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': color}),
                     html.Div([
                         html.Span(f"{data_items[7][1]}%", style={'font-size': '18px', 'font-weight': 'bold'}),
                         html.P(data_items[7][0].replace('%', ''), style={'font-size': '14px'}),
-                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': colors[4]}),
+                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': color}),
                     html.Div([
                         html.Span(f"{data_items[8][1]}%", style={'font-size': '18px', 'font-weight': 'bold'}),
                         html.P(data_items[8][0].replace('%', ''), style={'font-size': '14px'}),
-                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': colors[4]}),
+                    ], style={'flex': '1', 'padding': '10px', 'text-align': 'center', 'background-color': color}),
                 ], style={'width': '100%', 'height': '33.33%', 'display': 'flex', 'box-sizing': 'border-box', 'gap': '5px'}),
 
             ], style={'width': '60%', 'display': 'flex', 'flex-direction': 'column',
@@ -83,6 +83,8 @@ def create_context_data_display(data):
         ], style={'display': 'flex', 'height': '100%', 'gap': '5px'}),
 
     ], style={'max-width': '100%'})
+
+
 
 
 
@@ -133,7 +135,8 @@ def create_stacked_bar_chart(landslides_df):
             tickfont=dict(size=12),  # 设置字体大小
             side='left',
             anchor='free',
-            position=1 # 调整这个值可以精确控制标签的左右位置
+            position=1, # 调整这个值可以精确控制标签的左右位置
+            color='#fff',
         ),
         legend=dict(
             orientation='h',
