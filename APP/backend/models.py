@@ -3,13 +3,13 @@ import geopandas as gpd
 from sqlalchemy import text 
 from flask import jsonify
 
-def get_context(conn):
-    df = pd.read_sql_table(table_name='context data', con=conn)
+def get_context(conn, table_name):
+    df = pd.read_sql_table(table_name=table_name, con=conn)
     df_json = df.to_json(orient="records")
     return df_json
 
-def get_landslides(conn):
-    df = pd.read_sql_table(table_name='landslides data', con=conn)
+def get_landslides(conn, table_name):
+    df = pd.read_sql_table(table_name=table_name, con=conn)
     df_json = df.to_json(orient="records")
     return df_json
 
@@ -18,6 +18,10 @@ def get_regions(conn):
     df_json = df.to_json(orient="records")
     return df_json
 
+def get_landslide_hazard_map(conn):
+    df = pd.read_sql_table(table_name='landslide_hazard_map', con=conn)
+    df_json = df.to_json(orient="records")
+    return df_json
 # def get_measurements(conn):
 #     df = pd.read_sql_table(table_name='measurements', con=conn)
 #     df_json = df.to_json(orient="records")

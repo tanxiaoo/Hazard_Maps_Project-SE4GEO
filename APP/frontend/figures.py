@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
+import dash_leaflet as dl
+from dash import dcc, html, Dash, Input, Output
 
 from dash import html
 
@@ -178,53 +180,108 @@ def get_Choropleth(df, geo_data, arg, marker_opacity,
     )
     return fig
 
-
-def get_figure(df, geo_data, region, geo_sectors, basemap_style):
-    config = {'doubleClickDelay': 1000}  # Set a high delay to make double click easier
-
+def leaflet_map(region, regions_geo_data, highlight_geojson):
+    # 获取区域的配置
     cfg = plotly_config.get(region, plotly_config['Italy'])
 
-    arg = dict()
-    arg['min_value'] = np.percentile(np.array(df.area), 5)
-    arg['max_value'] = np.percentile(np.array(df.area), cfg['maxp'])
-    arg['z_vec'] = df['area']
-    arg['text_vec'] = df.apply(lambda row: f"{row['den_reg']}<br>area: {row['area']} km²", axis=1)
-    arg['colorscale'] = "YlOrRd"
-    arg['title'] = "area"
+    # 高亮区域的样式
+    highlight_style = {
+        'fillColor': 'red',
+        'color': 'red',
+        'weight': 3,
+        'dashArray': '5, 5',
+        'fillOpacity': 0.2
+    }
 
-    # Main Choropleth:
-    fig = get_Choropleth(df, geo_data, arg, marker_opacity=0.4,
-                         marker_line_width=1, marker_line_color='#6666cc')
+    # 确保 highlight_geojson 是有效的 FeatureCollection
+    if not highlight_geojson or 'features' not in highlight_geojson or not highlight_geojson['features']:
+        highlight_geojson = {'type': 'FeatureCollection', 'features': []}
 
-    # Highlight selections if geo_sectors is not empty:
-    if geo_sectors:
-        selected_id = list(geo_sectors.keys())[0]
-        selected_df = df[df['id'] == selected_id]
-        fig = get_Choropleth(selected_df, {'type': 'FeatureCollection', 'features': list(geo_sectors.values())}, arg, marker_opacity=1.0,
-                             marker_line_width=3, marker_line_color='aqua', fig=fig)
+    # 全局 GeoJSON 图层的样式
+    geojson_style = {
+        'fillColor': '#32CD32',  # 填充颜色
+        'color': '#32CD32',  # 边界颜色
+        'weight': 1,  # 边界宽度
+        'fillOpacity': 0.01  # 填充透明度
+    }
 
-    # Update layout:
-    fig.update_layout(mapbox_style=basemap_style,  # 使用传递的底图样式
-                      mapbox_zoom=cfg['zoom'],
-                      autosize=True,
-                      font=dict(color="#7FDBFF"),
-                      paper_bgcolor="#1f2630",
-                      mapbox_center={"lat": cfg['centre'][0], "lon": cfg['centre'][1]},
-                      uirevision=region,
-                      margin={"r": 0, "t": 0, "l": 0, "b": 0})
+    # WMS 图层的图例 URL
+    landslide_legend_url = "http://localhost:8080/geoserver/se4g24/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=se4g24:landslide_hazard_map"
+    population_legend_url = "http://localhost:8080/geoserver/se4g24/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=se4g24:ita_ppp_2020"
 
-    return fig
+    # 生成地图
+    leaflet_map = dl.Map(center=cfg['centre'], zoom=cfg['zoom'], children=[
+        dl.LayersControl(collapsed=True, children=[
+            dl.BaseLayer(dl.TileLayer(url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"), name="OpenStreetMap", checked=True),
+            dl.BaseLayer(dl.TileLayer(url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"), name="Carto Positron"),
+            dl.BaseLayer(dl.TileLayer(url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"), name="Esri Topographic"),
+            dl.BaseLayer(dl.TileLayer(url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"), name="Esri World Imagery"),
+            dl.Overlay(dl.WMSTileLayer(
+                url="http://localhost:8080/geoserver/se4g24/wms",
+                layers="se4g24:landslide_hazard_map",
+                format="image/png",
+                transparent=True,
+                version="1.1.0",
+                attribution="GeoServer WMS",
+                id="landslide-layer"
+            ), name="Landslide Hazard Map", checked=True),
+            dl.Overlay(dl.WMSTileLayer(
+                url="http://localhost:8080/geoserver/se4g24/wms",
+                layers="se4g24:ita_ppp_2020",
+                format="image/png",
+                transparent=True,
+                version="1.1.0",
+                attribution="GeoServer WMS",
+                id="population-layer"
+            ), name="Population Density", checked=True),
+            dl.Overlay(
+                dl.GeoJSON(data=regions_geo_data, id='geojson-layer', options=dict(style=geojson_style)),
+                name="Regions", checked=True
+            ),
+            dl.Overlay(
+                dl.GeoJSON(data=highlight_geojson, id='highlight-layer', options=dict(style=highlight_style)),
+                name="Selected Region", checked=True
+            ),
+        ])
+    ], style={'width': '100%', 'height': '100%'})
+
+    # 返回包含地图的 Div
+    return html.Div([
+        leaflet_map,
+        html.Img(id="landslide-legend-container", src=landslide_legend_url, style={
+            'position': 'absolute',
+            'bottom': '10px',
+            'left': '10px',
+            'background': 'white',
+            'border': '1px solid black',
+            'padding': '5px',
+            'z-index': '1000',
+            'display': 'block'
+        }),
+        html.Img(id="population-legend-container", src=population_legend_url, style={
+            'position': 'absolute',
+            'bottom': '10px',
+            'left': '10px',
+            'background': 'white',
+            'border': '1px solid black',
+            'padding': '5px',
+            'z-index': '1000',
+            'display': 'block'
+        }),
+    ], style={'position': 'relative', 'height': '100%'})
+
+
 
 
 
 plotly_config = {
     'Italy': {'centre': [41.8719, 12.5674], 'maxp': 99, 'zoom': 5},
     'Piemonte': {'centre': [45.0703, 7.6869], 'maxp': 99, 'zoom': 6.5},
-    'Valle d\'Aosta': {'centre': [45.7372, 7.3170], 'maxp': 99, 'zoom': 7},
+    'Valle d\'Aosta': {'centre': [45.7372, 7.3170], 'maxp': 99, 'zoom': 8},
     'Lombardia': {'centre': [45.4668, 9.1905], 'maxp': 99, 'zoom': 6.5},
-    'Trentino-Alto Adige': {'centre': [46.4993, 11.3548], 'maxp': 99, 'zoom': 6.8},
+    'Trentino-Alto Adige': {'centre': [46.06787, 11.12108], 'maxp': 99, 'zoom': 6.8},  # Updated value
     'Veneto': {'centre': [45.4342, 12.3384], 'maxp': 99, 'zoom': 7},
-    'Friuli Venezia Giulia': {'centre': [45.6500, 13.7700], 'maxp': 99, 'zoom': 6.5},
+    'Friuli Venezia Giulia': {'centre': [45.6500, 13.7700], 'maxp': 99, 'zoom': 8},
     'Liguria': {'centre': [44.4056, 8.9463], 'maxp': 99, 'zoom': 7},
     'Emilia-Romagna': {'centre': [44.4949, 11.3426], 'maxp': 99, 'zoom': 6.8},
     'Toscana': {'centre': [43.7696, 11.2558], 'maxp': 99, 'zoom': 7},
@@ -240,3 +297,4 @@ plotly_config = {
     'Sicilia': {'centre': [37.6000, 14.0154], 'maxp': 99, 'zoom': 7},
     'Sardegna': {'centre': [40.1209, 9.0129], 'maxp': 99, 'zoom': 7}
 }
+

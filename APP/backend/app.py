@@ -14,17 +14,23 @@ engine = create_engine(DATABASE_URL)
 conn = engine.connect()
 connection = psycopg2.connect(DATABASE_URL)
 
-@app.route("/context", methods=["GET"])
-def get_context_endpoint():
-    return get_context(conn = conn)
+@app.route("/context/<string:id>", methods=["GET"])
+def get_context_endpoint(id):
+    table_name = f'context_data_{id}'
+    return get_context(conn=conn, table_name=table_name)
 
-@app.route("/landslides", methods=["GET"])
-def get_landslides_endpoint():
-    return get_landslides(conn = conn)
+@app.route("/landslides/<string:id>", methods=["GET"])
+def get_landslides_endpoint(id):
+    table_name = f'landslides_data_{id}'
+    return get_landslides(conn=conn, table_name=table_name)
 
 @app.route("/regions", methods=["GET"])
 def get_regions_endpoint():
     return get_regions(conn = conn)
+
+@app.route("/landslide_hazard_map", methods=["GET"])
+def get_landslide_hazard_map_endpoint():
+    return get_landslide_hazard_map(conn = conn)
 
 
 
