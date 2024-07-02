@@ -23,11 +23,10 @@ This project aims to provide hazard maps for disaster management using Python, F
 
 2. **Download large files**
 
-    Due to GitHub's file size limitations, the `spatial_data` and `SLD` folders contain large files that need to be downloaded separately. Please download the necessary files from the following links and place them in the `backend/resources/geoserver/spatial_data` and `backend/resources/geoserver/SLD` folders respectively:
+    Due to GitHub's file size limitations, the `spatial_data`folders contain large files that need to be downloaded separately. Please download the necessary files from the following links and place them in the `backend/resources/geoserver/spatial_data`folders:
 
     - [Download spatial_data folder](https://polimi365-my.sharepoint.com/:f:/g/personal/10963273_polimi_it/EtD9xxptYb9Ai5hjSZd94dABqmt5mTafrHdKn9_7OXogUg?e=NJYVyi)
-    - [Download SLD folder](https://polimi365-my.sharepoint.com/:f:/g/personal/10963273_polimi_it/EtD9xxptYb9Ai5hjSZd94dABqmt5mTafrHdKn9_7OXogUg?e=NJYVyi)
-
+  
 3. **Create the database and enable the PostGIS extension**
 
     In pgAdmin:
