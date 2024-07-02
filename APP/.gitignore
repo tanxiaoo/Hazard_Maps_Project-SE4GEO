@@ -41,3 +41,8 @@ coverage.xml
 # Windows specific files
 Thumbs.db
 Desktop.ini
+
+# .gitignore
+*
+!.gitignore
+
