@@ -1,4 +1,7 @@
-# Hazard Maps Project
+# Software Release Document (SRD)
+This document aims to guide users in installing and running the Hazard Maps Project application and to outline the known limitations of the software. The project uses Python, Flask, GeoServer, and PostgreSQL with the PostGIS extension to provide hazard maps for disaster management.
+
+## Hazard Maps Project
 
 This project aims to provide hazard maps for disaster management using Python, Flask,GeoServer, and PostgreSQL with PostGIS extension. The following instructions will guide you through setting up and running the project.
 
@@ -34,6 +37,9 @@ This project aims to provide hazard maps for disaster management using Python, F
     1. Open pgAdmin and connect to your PostgreSQL server.
     2. Create a database named `se4g24`.
     3. Select the newly created database, open the query tool, and run the following command to enable the PostGIS extension:
+
+&nbsp;
+
         ```sql
         CREATE EXTENSION postgis;
         ```
@@ -71,9 +77,17 @@ This project aims to provide hazard maps for disaster management using Python, F
 
     Ensure to replace `yourpassword` with your PostgreSQL password.
 
+    &nbsp;
+
 6. **Install Python dependencies**
 
     Ensure you are in the `APP` directory, then run the following commands to create and activate a virtual environment and install the required Python packages:
+
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    
 
     ```sh
     python -m venv venv
@@ -107,4 +121,5 @@ This project aims to provide hazard maps for disaster management using Python, F
     python dashboard.py
     ```
 
-Following these steps will set up and run the project correctly. If you encounter any issues, please contact me.
+
+Follow these steps to correctly set up and run the project. If you encounter any issues during the process, please refer to the project documentation or contact the project development team for assistance.

@@ -31,9 +31,6 @@ def get_landslides_endpoint(id):
 def get_regions_endpoint():
     return get_regions(conn=conn)
 
-@app.route("/landslide_hazard_map", methods=["GET"])
-def get_landslide_hazard_map_endpoint():
-    return get_landslide_hazard_map(conn=conn)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
