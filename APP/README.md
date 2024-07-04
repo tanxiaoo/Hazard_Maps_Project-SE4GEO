@@ -1,18 +1,20 @@
-## V1.0.0 Update suggestions
+# V1.0.0 Update Suggestions
 
-1. **update leaflet_map function in figures.py**
+## 1. Update `leaflet_map` Function in `figures.py`
 
-    Try using the Folium tool to create maps to achieve the same functionality instead of dash_leaflet. You can find related code hints in the Slides_notebooks folder under practice_5_data_plotting on webeep:
+Try using the Folium tool to create maps to achieve the same functionality instead of `dash_leaflet`. You can find related code hints in the `Slides_notebooks` folder under `practice_5_data_plotting` on webeep:
 
-    ```sh
-plot polygons and make a chloropeth map according to an attribute
+```python
+import folium
+
+# Plot polygons and make a choropleth map according to an attribute
 m = folium.Map(location=[45.46, 9.19], zoom_start=11, tiles='CartoDB positron')
 folium.TileLayer('OpenStreetMap', name='OpenStreetMap', attr='OpenStreetMap').add_to(m)
 folium.GeoJson(milan).add_to(m)
 folium.Choropleth(
-    geo_data= milan.to_json(),
+    geo_data=milan.to_json(),
     data=milan,
-    columns=[milan.index,'AREA'],
+    columns=[milan.index, 'AREA'],
     key_on='feature.id',
     fill_color='YlGn',
     fill_opacity=0.7,
@@ -22,7 +24,7 @@ folium.Choropleth(
 ).add_to(m)
 folium.LayerControl().add_to(m)
 m
-    ```
+
 
 2. **Simplifying Italy's Risk Indicator Mapping with Folium**
 
