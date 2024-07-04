@@ -5,12 +5,10 @@
     Try using the Folium tool to create maps to achieve the same functionality instead of dash_leaflet. You can find related code hints in the Slides_notebooks folder under practice_5_data_plotting on webeep:
 
     ```sh
-# plot polygons and make a chloropeth map according to an attribute
+plot polygons and make a chloropeth map according to an attribute
 m = folium.Map(location=[45.46, 9.19], zoom_start=11, tiles='CartoDB positron')
 folium.TileLayer('OpenStreetMap', name='OpenStreetMap', attr='OpenStreetMap').add_to(m)
-
-# folium.GeoJson(milan).add_to(m)
-
+folium.GeoJson(milan).add_to(m)
 folium.Choropleth(
     geo_data= milan.to_json(),
     data=milan,
@@ -22,7 +20,6 @@ folium.Choropleth(
     legend_name='Area',
     name='Milano Zones'
 ).add_to(m)
-
 folium.LayerControl().add_to(m)
 m
     ```
