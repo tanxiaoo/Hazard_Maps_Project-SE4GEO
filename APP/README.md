@@ -1,125 +1,43 @@
-# Software Release Document (SRD)
-This document aims to guide users in installing and running the Hazard Maps Project application and to outline the known limitations of the software. The project uses Python, Flask, GeoServer, and PostgreSQL with the PostGIS extension to provide hazard maps for disaster management.
+## V1.0.0 Update suggestions
 
-## Hazard Maps Project
+1. **update leaflet_map function in figures.py**
 
-This project aims to provide hazard maps for disaster management using Python, Flask,GeoServer, and PostgreSQL with PostGIS extension. The following instructions will guide you through setting up and running the project.
-
-## Prerequisites
-
-- Python 3.8+
-- PostgreSQL 12+
-- Node.js and npm (for frontend dependencies)
-- pgAdmin (for database management)
-- GeoServer (for map layer publishing)
-
-## Setup Instructions
-
-1. **Clone the repository**
-
-    First, clone the repository to your local machine:
+    Try using the Folium tool to create maps to achieve the same functionality instead of dash_leaflet. You can find related code hints in the Slides_notebooks folder under practice_5_data_plotting on webeep:
 
     ```sh
-    git clone https://github.com/tanxiaoo/Hazard_Maps_Project-SE4GEO.git
-    cd Hazard_Maps_Project-SE4GEO/APP
+# plot polygons and make a chloropeth map according to an attribute
+m = folium.Map(location=[45.46, 9.19], zoom_start=11, tiles='CartoDB positron')
+folium.TileLayer('OpenStreetMap', name='OpenStreetMap', attr='OpenStreetMap').add_to(m)
+
+# folium.GeoJson(milan).add_to(m)
+
+folium.Choropleth(
+    geo_data= milan.to_json(),
+    data=milan,
+    columns=[milan.index,'AREA'],
+    key_on='feature.id',
+    fill_color='YlGn',
+    fill_opacity=0.7,
+    line_opacity=0.2,
+    legend_name='Area',
+    name='Milano Zones'
+).add_to(m)
+
+folium.LayerControl().add_to(m)
+m
     ```
 
-2. **Download large files**
+2. **Simplifying Italy's Risk Indicator Mapping with Folium**
 
-    Due to GitHub's file size limitations, the `spatial_data`folders contain large files that need to be downloaded separately. Please download the necessary files from the following links and place them in the `backend/resources/geoserver/spatial_data`folders:
+Add a new parameter `risk_indicator_gdf` to the `leaflet_map` function. `risk_indicator_gdf` is data that has already been prepared in the dashboard. This data contains risk indicators for various regions in Italy, such as population and buildings. The current method involves storing this data locally, styling it using QGIS, then publishing it on GeoServer, and finally fetching the map using dash_leaflet. 
 
-    - [Download spatial_data folder](https://polimi365-my.sharepoint.com/:f:/g/personal/10963273_polimi_it/EtD9xxptYb9Ai5hjSZd94dABqmt5mTafrHdKn9_7OXogUg?e=NJYVyi)
-  
-3. **Create the database and enable the PostGIS extension**
+Try using the Folium module to achieve the same functionality directly using the new parameter `risk_indicator_gdf` to create the map. This way, the use of GeoServer can be avoided, simplifying the user's workflow.
 
-    In pgAdmin:
+3. **Adding Dropdown for Color Styles**
 
-    1. Open pgAdmin and connect to your PostgreSQL server.
-    2. Create a database named `se4g24`.
-    3. Select the newly created database, open the query tool, and run the following command to enable the PostGIS extension:
+    If you can successfully use Folium to draw the Risk Indicator Map, try adding a new dropdown component. The dropdown content will be different color styles (e.g., fill_color='YlGn' parameter). This way, users can personalize the color used in the Risk Indicator Map.
+ 
+4. **Enhancing User Interaction with Folium: Highlighting Boundaries and Displaying Risk Indices on Click**
 
-&nbsp;
+    Use the Folium module to add more interactive features for users. For example, when a user clicks on a relevant area on the map, the boundary of that area will be highlighted, and a popup will display information such as the landslide risk index for that area.
 
-        ```sql
-        CREATE EXTENSION postgis;
-        ```
-    4. Run the `fill_database.py` file to populate the database:
-        ```sh
-        cd backend
-        python fill_database.py
-        ```
-
-4. **Configure GeoServer**
-
-    1. Download and install GeoServer:
-        - Visit the [GeoServer download page](http://geoserver.org/download/) and download the latest version of GeoServer.
-        - Follow the installation instructions.
-
-    2. Start GeoServer and access the GeoServer Web Interface at:
-        ```
-        http://localhost:8080/geoserver
-        ```
-
-    3. Publish layers and styles:
-        - In the left menu, select `Data` -> `Layers`.
-        - Click `Add new Layer`, select the data store, and choose the data from `backend/resources/geoserver/spatial_data` folder, then follow the prompts to complete the layer publishing.
-        - In the left menu, select `Style` -> `SLD`.
-        - Click `Add a new style`, upload the style files from `backend/resources/geoserver/SLD` directory, and apply them to the corresponding layers.
-
-5. **Create a .env file**
-
-    Create a `.env` file in the `APP` directory and add the following content:
-
-    ```plaintext
-    DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/se4g24
-    GEOSERVER_URL=http://localhost:8080/geoserver
-    ```
-
-    Ensure to replace `yourpassword` with your PostgreSQL password.
-
-    &nbsp;
-
-6. **Install Python dependencies**
-
-    Ensure you are in the `APP` directory, then run the following commands to create and activate a virtual environment and install the required Python packages:
-
-    &nbsp;
-    &nbsp;
-    &nbsp;
-    &nbsp;
-    
-
-    ```sh
-    python -m venv venv
-    source venv/bin/activate  # For Windows, use `venv\Scripts\activate`
-    pip install -r requirements.txt
-    ```
-
-7. **Install Node.js dependencies**
-
-    In the `APP` directory, install the Node.js dependencies:
-
-    ```sh
-    npm install
-    ```
-
-8. **Run the Flask application**
-
-    In the `APP` directory, run the Flask application:
-
-    ```sh
-    cd backend
-    python app.py
-    ```
-
-9. **Run the frontend dashboard**
-
-    In the `APP` directory, run the frontend dashboard:
-
-    ```sh
-    cd frontend
-    python dashboard.py
-    ```
-
-
-Follow these steps to correctly set up and run the project. If you encounter any issues during the process, please refer to the project documentation or contact the project development team for assistance.
