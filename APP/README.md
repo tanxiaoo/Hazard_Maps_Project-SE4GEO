@@ -24,6 +24,7 @@ folium.Choropleth(
 ).add_to(m)
 folium.LayerControl().add_to(m)
 m
+```
 
 
 2. **Simplifying Italy's Risk Indicator Mapping with Folium**
