@@ -7,6 +7,7 @@ import os
 import geopandas as gpd
 from geoalchemy2 import Geometry, WKTElement
 
+# environment 
 load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
 
