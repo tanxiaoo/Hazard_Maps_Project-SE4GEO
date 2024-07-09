@@ -24,49 +24,92 @@ gdf = gdf.rename_geometry('geom')
 gdf.to_postgis(name='regions', con=engine, if_exists='replace', index=False)
 
 def process_data(url, id):
-    # Fetch and parse data
     response = requests.get(url)
-    data = json.loads(response.text)
-    data = pd.json_normalize(data)
+    raw_data = response.text
 
-    # Extract context data
+    # Parse the raw text response into a JSON and DataFrame
+    data = json.loads(raw_data)
+    data = pd.json_normalize(data)
+    # Extract context data and create a new DataFrame
     context_data = {
-        'Territory (km²)': data.get('ar_kmq', [0])[0],
-        'Industries and services': data.get('im_tot', [0])[0],
-        'Buildings': data.get('ed_tot', [0])[0],
-        'Cultural heritage': data.get('n_vir', [0])[0],
-        'Population': data.get('pop_res011', [0])[0],
-        'Families': data.get('fam_tot', [0])[0],
-        'Children (0-14) %': data.get('pop_gio_p', [0])[0],
-        'Adults (15-64) %': data.get('pop_adu_p', [0])[0],
-        'Elderly (65+) %': data.get('pop_anz_p', [0])[0],
-        'Population at risk of Landslides': data.get('pop_idr_p1', [0])[0],
-        'Population at risk of Floods': data.get('pop_idr_p2', [0])[0]
+        'Territory (km²)': data['ar_kmq'].values[0] if 'ar_kmq' in data else 0,
+        'Industries and services': data['im_tot'].values[0] if 'im_tot' in data else 0,
+        'Buildings': data['ed_tot'].values[0] if 'ed_tot' in data else 0,
+        'Cultural heritage': data['n_vir'].values[0] if 'n_vir' in data else 0,
+        'Population': data['pop_res011'].values[0] if 'pop_res011' in data else 0,
+        'Families': data['fam_tot'].values[0] if 'fam_tot' in data else 0,
+        'Children (0-14) %': data['pop_gio_p'].values[0] if 'pop_gio_p' in data else 0,
+        'Adults (15-64) %': data['pop_adu_p'].values[0] if 'pop_adu_p' in data else 0,
+        'Elderly (65+) %': data['pop_anz_p'].values[0] if 'pop_anz_p' in data else 0,
+        'Population at risk of Landslides': data['pop_idr_p1'].values[0] if 'pop_idr_p1' in data else 0,
+        'Population at risk of Floods': data['pop_idr_p2'].values[0] if 'pop_idr_p2' in data else 0
     }
+
     context_df = pd.DataFrame([context_data])
 
-    # Extract landslides data
-    def format_data(data, field):
-        return f"{int(float(data.get(field, [0])[0]))} ({data.get(f'{field}_p', ['0%'])[0]})"
-
+    # Extract landslides data and create a new DataFrame
     landslides_data = {
         'Category': ['Very high P4', 'High P3', 'Medium P2', 'Moderate P1', 'Attention zones AA', 'P4 + P3'],
-        'Territory': [format_data(data, field) for field in ['ar_fr_p4', 'ar_fr_p3', 'ar_fr_p2', 'ar_fr_p1', 'ar_fr_aa', 'ar_fr_p3p4']],
-        'Population': [format_data(data, field) for field in ['pop_fr_p4', 'pop_fr_p3', 'pop_fr_p2', 'pop_fr_p1', 'pop_fr_aa', 'pop_fr_p3p4']],
-        'Families': [format_data(data, field) for field in ['fam_fr_p4', 'fam_fr_p3', 'fam_fr_p2', 'fam_fr_p1', 'fam_fr_aa', 'fam_fr_p3p4']],
-        'Buildings': [format_data(data, field) for field in ['ed_fr_p4', 'ed_fr_p3', 'ed_fr_p2', 'ed_fr_p1', 'ed_fr_aa', 'ed_fr_p3p4']],
-        'Industries and services': [format_data(data, field) for field in ['im_fr_p4', 'im_fr_p3', 'im_fr_p2', 'im_fr_p1', 'im_fr_aa', 'im_fr_p3p4']],
-        'Cultural heritage': [format_data(data, field) for field in ['bbcc_fr_p4', 'bbcc_fr_p3', 'bbcc_fr_p2', 'bbcc_fr_p1', 'bbcc_fr_aa', 'bbcc_fr_p3p4']]
+        'Territory': [
+            f"{int(float(data['ar_fr_p4'].values[0]))} ({data['ar_frp4_p'].values[0]}%)" if 'ar_fr_p4' in data else "0 (0%)",
+            f"{int(float(data['ar_fr_p3'].values[0]))} ({data['ar_frp3_p'].values[0]}%)" if 'ar_fr_p3' in data else "0 (0%)",
+            f"{int(float(data['ar_fr_p2'].values[0]))} ({data['ar_frp2_p'].values[0]}%)" if 'ar_fr_p2' in data else "0 (0%)",
+            f"{int(float(data['ar_fr_p1'].values[0]))} ({data['ar_frp1_p'].values[0]}%)" if 'ar_fr_p1' in data else "0 (0%)",
+            f"{int(float(data['ar_fr_aa'].values[0]))} ({data['ar_fraa_p'].values[0]}%)" if 'ar_fr_aa' in data else "0 (0%)",
+            f"{int(float(data['ar_fr_p3p4'].values[0]))} ({data['ar_frp3p4p'].values[0]}%)" if 'ar_fr_p3p4' in data else "0 (0%)"
+        ],
+        'Population': [
+            f"{int(float(data['pop_fr_p4'].values[0]))} ({data['popfrp4_p'].values[0]}%)" if 'pop_fr_p4' in data else "0 (0%)",
+            f"{int(float(data['pop_fr_p3'].values[0]))} ({data['popfrp3_p'].values[0]}%)" if 'pop_fr_p3' in data else "0 (0%)",
+            f"{int(float(data['pop_fr_p2'].values[0]))} ({data['popfrp2_p'].values[0]}%)" if 'pop_fr_p2' in data else "0 (0%)",
+            f"{int(float(data['pop_fr_p1'].values[0]))} ({data['popfrp1_p'].values[0]}%)" if 'pop_fr_p1' in data else "0 (0%)",
+            f"{int(float(data['pop_fr_aa'].values[0]))} ({data['popfraa_p'].values[0]}%)" if 'pop_fr_aa' in data else "0 (0%)",
+            f"{int(float(data['pop_fr_p3p4'].values[0]))} ({data['popfrp3p4p'].values[0]}%)" if 'pop_fr_p3p4' in data else "0 (0%)"
+        ],
+        'Families': [
+            f"{int(float(data['fam_fr_p4'].values[0]))} ({data['famfrp4_p'].values[0]}%)" if 'fam_fr_p4' in data else "0 (0%)",
+            f"{int(float(data['fam_fr_p3'].values[0]))} ({data['famfrp3_p'].values[0]}%)" if 'fam_fr_p3' in data else "0 (0%)",
+            f"{int(float(data['fam_fr_p2'].values[0]))} ({data['famfrp2_p'].values[0]}%)" if 'fam_fr_p2' in data else "0 (0%)",
+            f"{int(float(data['fam_fr_p1'].values[0]))} ({data['famfrp1_p'].values[0]}%)" if 'fam_fr_p1' in data else "0 (0%)",
+            f"{int(float(data['fam_fr_aa'].values[0]))} ({data['famfraa_p'].values[0]}%)" if 'fam_fr_aa' in data else "0 (0%)",
+            f"{int(float(data['fam_fr_p3p4'].values[0]))} ({data['famfrp3p4p'].values[0]}%)" if 'fam_fr_p3p4' in data else "0 (0%)"
+        ],
+        'Buildings': [
+            f"{int(float(data['ed_fr_p4'].values[0]))} ({data['edfrp4_p'].values[0]}%)" if 'ed_fr_p4' in data else "0 (0%)",
+            f"{int(float(data['ed_fr_p3'].values[0]))} ({data['edfrp3_p'].values[0]}%)" if 'ed_fr_p3' in data else "0 (0%)",
+            f"{int(float(data['ed_fr_p2'].values[0]))} ({data['edfrp2_p'].values[0]}%)" if 'ed_fr_p2' in data else "0 (0%)",
+            f"{int(float(data['ed_fr_p1'].values[0]))} ({data['edfrp1_p'].values[0]}%)" if 'ed_fr_p1' in data else "0 (0%)",
+            f"{int(float(data['ed_fr_aa'].values[0]))} ({data['edfraa_p'].values[0]}%)" if 'ed_fr_aa' in data else "0 (0%)",
+            f"{int(float(data['ed_fr_p3p4'].values[0]))} ({data['edfrp3p4p'].values[0]}%)" if 'ed_fr_p3p4' in data else "0 (0%)"
+        ],
+        'Industries and services': [
+            f"{int(float(data['im_fr_p4'].values[0]))} ({data['imfrp4_p'].values[0]}%)" if 'im_fr_p4' in data else "0 (0%)",
+            f"{int(float(data['im_fr_p3'].values[0]))} ({data['imfrp3_p'].values[0]}%)" if 'im_fr_p3' in data else "0 (0%)",
+            f"{int(float(data['im_fr_p2'].values[0]))} ({data['imfrp2_p'].values[0]}%)" if 'im_fr_p2' in data else "0 (0%)",
+            f"{int(float(data['im_fr_p1'].values[0]))} ({data['imfrp1_p'].values[0]}%)" if 'im_fr_p1' in data else "0 (0%)",
+            f"{int(float(data['im_fr_aa'].values[0]))} ({data['imfraa_p'].values[0]}%)" if 'im_fr_aa' in data else "0 (0%)",
+            f"{int(float(data['im_fr_p3p4'].values[0]))} ({data['imfrp3p4p'].values[0]}%)" if 'im_fr_p3p4' in data else "0 (0%)"
+        ],
+        'Cultural heritage': [
+            f"{int(float(data['bbcc_fr_p4'].values[0]))} ({data['bbccfrp4_p'].values[0]}%)" if 'bbcc_fr_p4' in data else "0 (0%)",
+            f"{int(float(data['bbcc_fr_p3'].values[0]))} ({data['bbccfrp3_p'].values[0]}%)" if 'bbcc_fr_p3' in data else "0 (0%)",
+            f"{int(float(data['bbcc_fr_p2'].values[0]))} ({data['bbccfrp2_p'].values[0]}%)" if 'bbcc_fr_p2' in data else "0 (0%)",
+            f"{int(float(data['bbcc_fr_p1'].values[0]))} ({data['bbccfrp1_p'].values[0]}%)" if 'bbcc_fr_p1' in data else "0 (0%)",
+            f"{int(float(data['bbcc_fr_aa'].values[0]))} ({data['bbccfraa_p'].values[0]}%)" if 'bbcc_fr_aa' in data else "0 (0%)",
+            f"{int(float(data['bbcc_fr_p3p4'].values[0]))} ({data['bbccfrp34p'].values[0]}%)" if 'bbcc_fr_p3p4' in data else "0 (0%)"
+        ]
     }
+
     landslides_df = pd.DataFrame(landslides_data)
 
-    # Adding new category - None zones
+    # Adding new category-None zones
     def extract_values_percent(cell):
         value, percent = cell.split(' (')
         return float(value), float(percent.rstrip('%)'))
 
     sum_values = {}
     sum_percentages = {}
+
     columns_to_process = ['Territory', 'Population', 'Families', 'Buildings', 'Industries and services', 'Cultural heritage']
 
     for column in columns_to_process:
@@ -85,3 +128,15 @@ def process_data(url, id):
     # Post to DB
     context_df.to_sql(f'context_data_{id}', engine, if_exists='replace', index=False)
     landslides_df.to_sql(f'landslides_data_{id}', engine, if_exists='replace', index=False)
+
+# Send the request
+url = 'https://test.idrogeo.isprambiente.it/api/pir/italia'
+# Process the data
+process_data(url, "Italy")
+
+# List of IDs to process
+region_ids = list(range(1,21)) # Example list of region IDs
+
+for region_id in region_ids:
+    url = f'https://test.idrogeo.isprambiente.it/api//pir/regioni/{region_id}'
+    process_data(url, region_id)
